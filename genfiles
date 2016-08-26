@@ -1,0 +1,146 @@
+#!/usr/bin/env gosh
+
+(use file.util)
+(use gauche.collection)
+(use gauche.parseopt)
+(use gauche.process)
+(use slib)
+(use srfi-13)
+(use rfc.json)
+(use util.match)
+
+(require 'format)
+
+(define (p . args) (for-each print args))
+
+(define (usage)
+  (p (format #f "Usage: ~a [options] configfile" *program-name*)
+     "Options:"
+     "  -h, --help   : show usage"
+     "  -s, --suffix : template file suffix (default: in)")
+  (exit 0))
+
+(define (ssrb path)
+  (string-scan-right path #\/ 'before))
+
+(define (cat-keys alist)
+  (letrec
+      ([res '()]
+       [cat (^[s k] (if s (format #f "~a:~a" s k) k))]
+       [fg (^[sofar]
+             (match-lambda
+               [(key . (? string? val))
+                (push! res (cons (cat sofar key) val))]
+               [(key . (? pair? alist))
+                (for-each (fg (cat sofar key)) alist)]
+               [(key . #(e1 ...))
+                (push! res (cons (cat sofar key) e1))]))])
+    (for-each (fg #f) alist)
+    res))
+
+(define-class <c-obj> ()
+  ((file :init-keyword :file :getter get-file)
+   (sexp :init-keyword :sexp :getter get-sexp)))
+
+(define-method delete-file ((c <c-obj>))
+  (delete-file (get-file c)))
+
+(define (make-c-obj json :optional base)
+  (let ([sexp (cat-keys (call-with-input-file json parse-json
+                           :if-does-not-exist :error))]
+        [fn (^[sexp]
+              (receive (port file) (sys-mkstemp (format #f "~a_" json))
+                (call-with-port port (^[out] (write (reverse sexp) out)))
+                (make <c-obj> :file file :sexp sexp)))])
+    (if (undefined? base)
+        (fn sexp)
+        (begin
+          (unless (is-a? base <c-obj>)
+            (error "<c-obj> required as base, but got:" base))
+          (fn (append sexp (get-sexp base)))))))
+
+(define-class <c-map> ()
+  ((conf-map :init-form (make-hash-table 'string=?))
+   (conf-top :init-keyword :top)
+   (conf-cnt :init-form 0)))
+
+(define-method write-object ((c <c-map>) out)
+  (format out "#<conf ~s ~d/~d>"
+          (ref c 'conf-top) (ref c 'conf-cnt)
+          (hash-table-num-entries (ref c 'conf-map))))
+
+(define-method get ((c <c-map>) path)
+  (hash-table-get (ref c 'conf-map) path '()))
+
+(define-method put! ((c <c-map>) path)
+  (hash-table-put! (ref c 'conf-map)
+     path (if (string=? path (ref c 'conf-top))
+              '()
+              (get c (ssrb path))))
+  c)
+
+(define-method put! ((c <c-map>) path json)
+  (hash-table-put! (ref c 'conf-map)
+     path (if (string=? path (ref c 'conf-top))
+              (make-c-obj json)
+              (make-c-obj json (get c (ssrb path)))))
+  (inc! (ref c 'conf-cnt))
+  c)
+
+(define-method cleanup ((c <c-map>))
+  (for-each delete-file (hash-table-values (ref c 'conf-map))))
+
+(define (file-update! topdir conf sfx)
+  (unless (file-is-directory? topdir)
+    (error "Directory required, but got:" topdir))
+  (let1 %cm (make <c-map> :top topdir)
+    (directory-fold topdir
+      (^[path _]
+        (run-process
+         `(escm "-i" gosh -o ,(string-scan-right path sfx 'before)
+                -e (define %%ht
+                     (alist->hash-table
+                      (with-input-from-file
+                          ,(format #f "\"~a\""
+                                   (get-file (get %cm (ssrb path))))
+                        read
+                        ":if-does-not-exist" ":error")
+                      'string=?))
+                -e (define-syntax find
+                     (syntax-rules ()
+                       ([_ key]
+                        (let1 key (symbol->string 'key)
+                          (if (hash-table-exists? %%ht key)
+                              (hash-table-get %%ht key)
+                              key)))))
+                ,path)
+         :wait #t))
+      #f
+      :lister (^[path _]
+                (let* ([ps (directory-list path
+                             :add-path? #t :children? #t
+                             :filter (^p (and (not (string-prefix? "." p))
+                                              (not (string-suffix? "~" p)))))]
+                       [ds (filter file-is-directory? ps)]
+                       [ts (filter (cut string-suffix? sfx <>) ps)])
+                  (match (filter (^p (string=? (regexp-replace #/^.*\// p "")
+                                               conf)) ps)
+                    [(conf) (put! %cm path conf)]
+                    [else (put! %cm path)])
+                  (values (append ds ts) _)))
+      )
+    (cleanup %cm)
+    ))
+
+;; Entry point
+(define (main args)
+  (let-args (cdr args)
+      ([sfx "s|suffix=s" "in"]
+       [#f "h|help" => usage]
+       [else (opt . _) (print "Unknown option : " opt) (usage)]
+       . args)
+    (match args
+      [() (usage)]
+      [(config)
+       (file-update! (sys-getcwd) config (format #f ".~a" sfx))]
+      [else (usage)])))

@@ -1,0 +1,7 @@
+---
+- name: upgrade all packages
+  yum: name=* state=latest
+
+- name: install cloudera-manager-agent dependent packages
+  yum: name={{ item }} state=present
+  with_items: '{{ depends }}'

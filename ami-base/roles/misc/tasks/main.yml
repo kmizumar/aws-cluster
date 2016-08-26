@@ -1,0 +1,68 @@
+---
+# - name: disable unused services
+#   service: name={{ item }} state=stopped enabled=no
+#   with_items:
+#     - bluetooth
+#     - cups
+#     - postfix
+
+- name: set vm.swappiness to 10
+  sysctl: name=vm.swappiness value=10
+          sysctl_set=yes state=present reload=yes ignoreerrors=yes
+
+- name: check transparent huge pages existence
+  stat: path=/sys/kernel/mm/redhat_transparent_hugepage/defrag
+  register: thp
+
+- name: disable transparent huge pages
+  shell: echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
+  when: thp.stat.exists
+
+- name: disable transparent huge pages (rc.local)
+  lineinfile: >
+    dest=/etc/rc.local
+    line='echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag'
+    state=present
+  when: thp.stat.exists
+
+- name: set limits.conf
+  lineinfile: >
+    dest=/etc/security/limits.conf
+    line='{{ item }}'
+    state=present
+  with_items:
+    - hdfs   - nofile 32768
+    - mapred - nofile 32768
+    - hbase  - nofile 32768
+    - hdfs   - nproc  32768
+    - mapred - nproc  32768
+    - hbase  - nproc  32768
+
+- name: allow wheel group to run all commands
+  lineinfile: >
+    dest=/etc/sudoers state=present backrefs=yes
+    regexp='^(.*)(%wheel.*NOPASSWD: ALL)$' line='  \2'
+
+- name: disable root login (sshd)
+  lineinfile: >
+    dest=/etc/ssh/sshd_config state=present backrefs=yes
+    regexp='^([ #]*)(PermitRootLogin) \w+$' line='\2 no'
+  notify: restart sshd
+
+- name: disable password authentication (sshd)
+  lineinfile: >
+    dest=/etc/ssh/sshd_config state=present backrefs=yes
+    regexp='^(PasswordAuthentication) \w+$' line='\1 no'
+  notify: restart sshd
+
+- name: disable strict host key checking (ssh)
+  lineinfile: >
+    dest=/etc/ssh/ssh_config state=present
+    insertafter='^Host\s+\*$' line='  StrictHostKeyChecking no'
+
+
+#
+# run tasks which make cloudera-manager-agent installation process
+# short and simple
+#
+- include: prepare-for-cloudera-manager-agent.yml

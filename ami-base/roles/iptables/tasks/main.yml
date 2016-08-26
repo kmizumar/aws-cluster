@@ -1,0 +1,6 @@
+---
+- name: remove firewalld/iptables if exists
+  yum: name={{ item }}  state=absent
+  with_items:
+    - firewalld
+    - iptables

@@ -1,0 +1,34 @@
+---
+- name: copy jdk rpm file
+  copy: src={{ vault_dir }}/{{ jdk_rpm }} dest=/root/{{ jdk_rpm }}
+        owner=root group=root mode=0644
+
+- name: install jdk
+  yum: name=/root/{{ jdk_rpm }} state=present
+
+- name: set JAVA_HOME
+  lineinfile: >
+    dest=/etc/default/bigtop-utils
+    line='export JAVA_HOME=/usr/java/default'
+    state=present create=yes
+    owner=root group=root mode=0644
+
+- name: install JCE unlimited strength jurisdiction polycy files 8
+  copy: src={{ item }} dest=/usr/java/default/jre/lib/security
+  with_items:
+    - US_export_policy.jar
+    - local_policy.jar
+
+- name: create /usr/share/java directory
+  file: path=/usr/share/java state=directory
+        owner=root group=root mode=0755
+
+- name: install mysql jdbc connector
+  copy: src={{ mysql_jdbc }} dest=/usr/share/java/{{ mysql_jdbc }}
+        owner=root group=root mode=0644
+
+- name: create a link to mysql jdbc connector
+  file: src=/usr/share/java/{{ mysql_jdbc }}
+        dest=/usr/share/java/mysql-connector-java.jar
+        state=link
+        owner=root group=root mode=0644

@@ -1,0 +1,6 @@
+---
+vault_dir: <?= (find vault:oracle) !>
+jdk_rpm: <?= (car (filter-map (cut rxmatch->string #/([^\/]+rpm)/ <>)
+                              (find oracle-java-files))) !>
+jce_zip: <?= (car (filter-map (cut rxmatch->string #/([^\/]+zip)/ <>)
+                              (find oracle-java-files))) !>

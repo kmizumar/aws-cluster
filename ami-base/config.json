@@ -1,0 +1,25 @@
+{
+    "aws": {
+        "subnet_public": "subnet-6edf2d18",
+        "subnet_private": "subnet-37df2d41",
+        "availability_zone": "ap-northeast-1a",
+        "security_group": "sg-237cbb47",
+        "region": "ap-northeast-1",
+
+        "username": "centos",
+        "instance_type": "m4.large",
+        "ami": "ami-eec1c380",
+
+        "private_ip_address": "10.101.3.254"
+    },
+
+    "vault": {
+        "oracle": "vault/oracle-java"
+    },
+
+    "oracle-java-files": [
+        "jdk-8u31-linux-x64.rpm",
+        "jce_policy-8.zip"
+    ]
+
+}
