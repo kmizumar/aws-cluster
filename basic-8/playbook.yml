@@ -15,3 +15,29 @@
     - local-repository
 
   post_tasks:
+
+
+- hosts: master
+  become: yes
+  become_method: sudo
+
+  pre_tasks:
+    - name: set hostname
+      hostname: name={{ host }}
+
+  roles:
+
+  post_tasks:
+
+
+- hosts: slave
+  become: yes
+  become_method: sudo
+
+  pre_tasks:
+    - name: set hostname
+      hostname: name={{ host }}
+
+  roles:
+
+  post_tasks:
