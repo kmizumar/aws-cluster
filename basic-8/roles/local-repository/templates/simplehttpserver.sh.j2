@@ -1,0 +1,112 @@
+#!/bin/bash
+
+# source function library.
+if [ -f /etc/rc.d/init.d/functions ]; then
+  . /etc/rc.d/init.d/functions
+elif [ -f /lib/lsb/init-functions ]; then
+  . /lib/lsb/init-functions
+  . /etc/rc.status
+  rc_reset
+fi
+
+binary="python"
+prog="simplehttpserver"
+start_timeout=5
+kill_timeout=5
+pidfile={{ misc_dir }}/$prog.pid
+
+SERVER_OUT={{ misc_dir }}/$prog.out
+
+RETVAL=0
+
+local_checkpid() {
+  checkpid `cat $pidfile`
+  RETVAL=$?
+  return $RETVAL
+}
+
+local_killproc() {
+  killproc -p $pidfile -d $kill_timeout $prog
+  RETVAL=$?
+  return $RETVAL
+}
+
+local_check_start() {
+  local_checkpid && echo_success || echo_failure
+  return $RETVAL
+}
+
+local_print_stop() {
+  # killproc prints on Redhat.
+  echo
+}
+
+local_check_success() {
+  [ $RETVAL = 0 ] && echo_success || echo_failure
+}
+
+start() {
+  # check to see if the server is already running by looking at the pid file
+  # and grepping the process table.
+  if [ -f $pidfile ] && local_checkpid; then
+    echo "$prog is already running"
+    exit 0
+  fi
+
+  cat < /dev/null > $SERVER_OUT
+  echo -n "Starting $prog: "
+
+  /bin/bash -c "nohup ./simplehttpserver" >> $SERVER_OUT 2>&1 </dev/null &
+  server_pid=$!
+  echo $server_pid > $pidfile
+  # sleep so the process can make its way to the process table - and out again
+  # if it fails at startup - which could take a while.
+  sleep $start_timeout
+  local_check_start
+  RETVAL=$?
+  echo
+  return $RETVAL
+}
+
+stop() {
+  # check if the process is already stopped by seeing if the pid file exists.
+  if [ ! -f $pidfile ]; then
+    echo "$prog is already stopped"
+    return 0
+  fi
+  echo -n $"Stopping $prog: "
+  local_killproc
+  RETVAL=$?
+  local_print_stop
+  [ $RETVAL = 0 ] && rm -f ${pidfile}
+}
+
+status_fn() {
+  status -p $pidfile $prog
+  RETVAL=$?
+  if [ $RETVAL = 1 ] || [ $RETVAL = 3 ]; then
+    RETVAL=0
+  fi
+}
+
+case $1 in
+  start)
+    start
+    ;;
+  stop)
+    stop
+    ;;
+  status)
+    status_fn
+    ;;
+  restart)
+    stop
+    start
+    ;;
+  *)
+    echo "Usage: $prog {start|stop|restart|status}"
+    RETVAL=3
+    ;;
+esac
+
+exit $RETVAL

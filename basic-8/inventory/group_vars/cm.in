@@ -1,0 +1,22 @@
+---
+vault_cm_dir: <?= (find vault:cm) !>
+vault_dir_cdh580: <?= (find vault:cdh580) !>
+vault_mysql_dir: <?= (find vault:mysql) !>
+
+
+mysql_root_name: <?= (find mysql:root_name) !>
+mysql_root_pass: <?= (find mysql:root_pass) !>
+
+mysql_start_timeout: <?= (find mysql:start_timeout) !>
+
+mysql_db:
+<? (for-each
+    (^x (format #t "  - ~a: ~a\n" (caar x) (cdar x))
+        (for-each (^x (format #t "    ~a: ~a\n" (car x) (cdr x)))
+                  (cdr x)))
+    (find mysql:dbs)) !>
+
+
+scm_db_name: <?= (find mysql:scm:db_name) !>
+scm_db_user: <?= (find mysql:scm:db_user) !>
+scm_db_pass: <?= (find mysql:scm:db_pass) !>

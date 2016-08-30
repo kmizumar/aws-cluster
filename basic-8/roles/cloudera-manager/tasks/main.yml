@@ -1,0 +1,22 @@
+---
+- include: create-local-repo.yml
+
+
+- name: install cloudera manager packages
+  yum: name={{ item }} state=present
+  with_items:
+    - cloudera-manager-daemons
+    - cloudera-manager-server
+    - cloudera-manager-agent
+
+- include: setup-mysql.yml
+  when: "rdbms == 'mysql'"
+
+- include: setup-postgresql.yml
+  when: "rdbms == 'postgresql'"
+
+- name: remove the embedded postgresql properties
+  file: name=/etc/cloudera-scm-server/db.mgmt.properties state=absent
+
+- name: start cloudera-scm-server service
+  service: name=cloudera-scm-server state=started enabled=yes

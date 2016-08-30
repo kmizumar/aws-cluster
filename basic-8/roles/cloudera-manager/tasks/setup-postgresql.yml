@@ -1,0 +1,23 @@
+---
+- name: check if a cloudera manager server external database exists or not
+  shell: >
+    PGPASSWORD={{ postgresql_root_pass }} /usr/bin/psql -h {{ scm_db_host }} -U {{ postgresql_root_name }} -l
+  register: databases
+
+- name: preparing a cloudera manager server external database
+  shell: >
+    /usr/share/cmf/schema/scm_prepare_database.sh postgresql
+    -h {{ scm_db_host }}
+    -u{{ postgresql_root_name }} -p{{ postgresql_root_pass }}
+    {{ scm_db_name }} {{ scm_db_user }} {{ scm_db_pass }}
+  when: databases.stdout.find('{{ scm_db_name }}') == -1 and
+        "{{ scm_host }}" == "{{ scm_db_host }}"
+
+- name: preparing a cloudera manager server external database
+  shell: >
+    /usr/share/cmf/schema/scm_prepare_database.sh postgresql
+    -h {{ scm_db_host }} --scm-host {{ scm_host }}
+    -u{{ postgresql_root_name }} -p{{ postgresql_root_pass }}
+    {{ scm_db_name }} {{ scm_db_user }} {{ scm_db_pass }}
+  when: databases.stdout.find('{{ scm_db_name }}') == -1 and
+        "{{ scm_host }}" != "{{ scm_db_host }}"

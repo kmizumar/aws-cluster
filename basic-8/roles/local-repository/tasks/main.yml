@@ -1,0 +1,35 @@
+---
+- name: make directories for local repo
+  file: path={{ item }} state=directory
+        owner=root group=root
+  with_items:
+    - "{{ misc_dir }}"
+    - "{{ parcel_dir }}"
+    - "{{ parcel_dir }}/5.8.0"
+
+- name: upload control/daemon script
+  template: src={{ item.src }}
+            dest={{ misc_dir }}/{{ item.dest }}
+            mode=0755
+  with_items:
+    - { src: simplehttpserver.sh.j2, dest: simplehttpserver.sh }
+    - { src: simplehttpserver.j2, dest: simplehttpserver }
+
+- name: upload parcels (5.8.0)
+  copy: src={{ vault_dir_cdh580 }}/{{ item }}
+        dest={{ parcel_dir }}/5.8.0/{{ item }}
+        owner=root group=root
+  with_items:
+    '{{ cdh580_files }}'
+
+- name: check simplehttpserver status
+  shell: ./simplehttpserver.sh status
+  args:
+    chdir: "{{ misc_dir }}"
+  register: shs
+
+- name: start simplehttpserver
+  shell: ./simplehttpserver.sh start
+  args:
+    chdir: "{{ misc_dir }}"
+  when: shs.stdout.find("running...") == -1

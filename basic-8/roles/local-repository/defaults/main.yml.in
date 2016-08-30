@@ -1,0 +1,10 @@
+---
+misc_dir: /opt/cloudera/misc
+parcel_dir: /opt/cloudera/misc/parcels
+
+vault_dir_cdh580: <?= (find vault:cdh580) !>
+
+cdh580_files:
+<? (for-each (cut format #t " - ~a\n" <>) (find cdh580:files)) !>
+
+simplehttpserver_port: 8900

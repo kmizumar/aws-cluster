@@ -1,0 +1,20 @@
+---
+local_repo: /opt/cloudera/repos
+
+cm5_pkg_dir: /opt/cloudera/repos/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64
+
+cm5_pkgfiles:
+<? (for-each (cut format #t " - ~a\n" <>) (find cloudera-manager:pkgfiles)) !>
+
+scm_db_name: scm
+scm_db_user: scm
+scm_db_pass: scm_password
+
+scm_db_host: "{{ ansible_hostname }}"
+scm_host: "{{ ansible_hostname }}"
+
+mysql_root_name: root
+mysql_root_pass: root_password
+
+postgresql_root_name: postgres
+postgresql_root_pass: postgres

@@ -1,0 +1,203 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.ssh.insert_key = false
+  config.ssh.pty        = true
+
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  config.vm.define :cm do |cm|
+    cm.vm.box               = 'dummy'
+    cm.ssh.username         = '<?= (find aws:username) !>'
+    cm.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    cm.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:cm:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:cm:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-cm-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :nn1 do |nn|
+    nn.vm.box               = 'dummy'
+    nn.ssh.username         = '<?= (find aws:username) !>'
+    nn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    nn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:nn1:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:nn1:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-nn1-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :nn2 do |nn|
+    nn.vm.box               = 'dummy'
+    nn.ssh.username         = '<?= (find aws:username) !>'
+    nn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    nn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:nn2:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:nn2:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-nn2-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :jn3 do |jn|
+    jn.vm.box               = 'dummy'
+    jn.ssh.username         = '<?= (find aws:username) !>'
+    jn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    jn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:jn3:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:jn3:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-jn3-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :dn1 do |dn|
+    dn.vm.box               = 'dummy'
+    dn.ssh.username         = '<?= (find aws:username) !>'
+    dn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    dn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:dn:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:dn1:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn1-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :dn2 do |dn|
+    dn.vm.box               = 'dummy'
+    dn.ssh.username         = '<?= (find aws:username) !>'
+    dn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    dn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:dn:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:dn2:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn2-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :dn3 do |dn|
+    dn.vm.box               = 'dummy'
+    dn.ssh.username         = '<?= (find aws:username) !>'
+    dn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    dn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:dn:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:dn3:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn3-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+  config.vm.define :dn4 do |dn|
+    dn.vm.box               = 'dummy'
+    dn.ssh.username         = '<?= (find aws:username) !>'
+    dn.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
+
+    dn.vm.provider :aws do |aws|
+      aws.access_key_id     = ENV['AWS_ACCESS_KEY_ID']
+      aws.secret_access_key = ENV['AWS_SECRET_ACCESS_KEY']
+      aws.keypair_name      = ENV['AWS_KEYPAIR_NAME']
+
+      aws.subnet_id          = '<?= (find aws:subnet_private) !>'
+      aws.availability_zone  = '<?= (find aws:availability_zone) !>'
+      aws.security_groups    = ['<?= (find aws:security_group) !>']
+
+      aws.region = '<?= (find aws:region) !>'
+      aws.ami    = '<?= (find aws:ami) !>'
+      aws.instance_type = '<?= (find aws:dn:instance_type) !>'
+
+      aws.private_ip_address = '<?= (find aws:dn4:addr) !>'
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn4-7",
+                     'owner' => "#{ENV['USER']}" }
+    end
+  end
+
+end

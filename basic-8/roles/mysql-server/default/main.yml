@@ -1,0 +1,33 @@
+---
+mysql_root_pass: root_password
+
+mysql_start_timeout: 120
+
+mysql_db:
+  - name: amon
+    user: amon
+    pass: amon_password
+
+  - name: rman
+    user: rman
+    pass: rman_password
+
+  - name: metastore
+    user: hive
+    pass: hive_password
+
+  - name: sentry
+    user: sentry
+    pass: sentry_password
+
+  - name: nav
+    user: nav
+    pass: nav_password
+
+  - name: navms
+    user: navms
+    pass: navms_password
+
+  - name: oozie
+    user: oozie
+    pass: oozie_password

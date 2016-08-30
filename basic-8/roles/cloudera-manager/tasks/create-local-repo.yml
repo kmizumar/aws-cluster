@@ -1,0 +1,41 @@
+---
+- name: install createrepo package
+  yum: name=createrepo state=present
+
+- name: make directory for local repo
+  file: path={{ cm5_pkg_dir }} state=directory
+        owner=root group=root
+
+- name: upload cloudera manager 5 packages
+  copy: src={{ vault_cm_dir }}/{{ item }}
+        dest={{ cm5_pkg_dir }}/{{ item }}
+        owner=root group=root
+  with_items:
+    '{{ cm5_pkgfiles }}'
+
+- name: run createrepo command (cloudera manager 5 packages)
+  command: /usr/bin/createrepo {{ cm5_pkg_dir }}/../..
+
+- name: install vsftpd package
+  yum: name=vsftpd state=present
+
+- name: enable anonymous user access
+  lineinfile: >
+    dest=/etc/vsftpd/vsftpd.conf state=present backrefs=yes
+    regexp='^(.*)(anonymous_enable=)(.*)$' line='\2YES'
+
+- name: disable local user access
+  lineinfile: >
+    dest=/etc/vsftpd/vsftpd.conf state=present backrefs=yes
+    regexp='^(.*)(local_enable=)(.*)$' line='\2NO'
+
+- name: bind mount the local repo
+  mount: src={{ local_repo }} name=/var/ftp/pub opts=bind
+         fstype=ext4 state=mounted
+
+- name: start vsftpd service
+  service: name=vsftpd state=restarted enabled=yes
+
+- name: register local repo
+  template: src=clouderajp.repo.j2 dest=/etc/yum.repos.d/clouderajp.repo
+            owner=root group=root

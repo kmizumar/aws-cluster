@@ -1,0 +1,17 @@
+---
+- hosts: cm
+  become: yes
+  become_method: sudo
+  vars:
+    rdbms: mysql
+
+  pre_tasks:
+    - name: set hostname
+      hostname: name={{ host }}
+
+  roles:
+    - mysql-server
+    - cloudera-manager
+    - local-repository
+
+  post_tasks:

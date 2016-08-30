@@ -1,0 +1,90 @@
+---
+- name: remove mariadb
+  yum: name=mariadb-libs state=absent
+
+- name: copy mysql rpm files
+  copy: src={{ vault_mysql_dir }}/{{ item }} dest=/root/{{ item }}
+          owner=root group=root mode=0644
+  with_items:
+    - mysql-community-common-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-libs-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-libs-compat-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-client-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-server-5.7.14-1.el7.x86_64.rpm
+
+
+- name: install mysql server binaries
+  yum: name=/root/{{ item }} state=present
+  with_items:
+    - mysql-community-common-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-libs-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-libs-compat-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-client-5.7.14-1.el7.x86_64.rpm
+    - mysql-community-server-5.7.14-1.el7.x86_64.rpm
+
+- name: install python mysqldb module
+  yum: name=MySQL-python state=present
+
+# - name: set isolation level to read committed
+#   lineinfile: >
+#     dest=/etc/my.cnf state=present
+#     insertafter='^\[mysqld\]$'
+#     line='transaction-isolation = READ-COMMITTED'
+
+- name: install my.cnf
+  template: src=my.cnf.j2 dest=/etc/my.cnf
+            owner=root group=root mode=0644
+            backup=yes
+  notify:
+    - start mysqld
+
+- name: increase timeout limit for mysqld start
+  lineinfile: >
+    dest=/etc/sysconfig/mysqld line='STARTTIMEOUT={{ mysql_start_timeout }}'
+    state=present create=yes
+    owner=root group=root mode=0644
+
+- name: start mysqld service
+  service: name=mysqld state=started enabled=yes
+
+- name: get temporary password
+  shell: grep 'temporary password' /var/log/mysqld.log | tail -n 1 | awk '{ print $11 }'
+  register: result
+
+- name: set mysql root password
+  command: mysql --connect-expired-password -uroot -p'{{ result.stdout }}' -e "SET PASSWORD = PASSWORD('{{ mysql_root_pass }}');"
+
+# **** the order of items is important ****
+- name: update mysql root password for all root accounts
+  mysql_user: name=root host={{ item }} password={{ mysql_root_pass }}
+              login_user=root login_password={{ mysql_root_pass }}
+  with_items:
+   - "{{ scm_db_host }}"
+   - 127.0.0.1
+   - localhost
+
+- name: copy .my.cnf file with root password credentials
+  template: src=dot.my.cnf.j2 dest=~/.my.cnf mode=0600
+
+- name: ensure anonymous users are not in the database
+  mysql_user: name='' host={{ item }} state=absent
+  with_items:
+   - localhost
+   - "{{ scm_db_host }}"
+
+- name: remove the test database
+  mysql_db: name=test state=absent
+
+- name: create the databases
+  mysql_db: name={{ item.name }} encoding=utf8 state=present
+  with_items: "{{ mysql_db }}"
+  when: mysql_db | lower() != 'none'
+
+- name: create the database users
+  mysql_user: name={{ item.user }}
+              password={{ item.pass | default(item.user) }}
+              priv="{{ item.name }}.*:ALL"
+              state=present
+              host='%'
+  with_items: "{{ mysql_db }}"
+  when: mysql_db | lower() != 'none'
