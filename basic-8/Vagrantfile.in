@@ -27,7 +27,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:cm:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:cm:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-cm-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-cm",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -51,7 +51,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:nn1:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:nn1:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-nn1-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-nn1",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -75,7 +75,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:nn2:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:nn2:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-nn2-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-nn2",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -99,7 +99,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:jn3:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:jn3:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-jn3-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-jn3",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -123,7 +123,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:dn:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:dn1:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn1-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-dn1",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -147,7 +147,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:dn:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:dn2:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn2-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-dn2",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -171,7 +171,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:dn:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:dn3:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn3-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-dn3",
                      'owner' => "#{ENV['USER']}" }
     end
   end
@@ -195,7 +195,7 @@ Vagrant.configure(2) do |config|
       aws.instance_type = '<?= (find aws:dn:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:dn4:addr) !>'
-      aws.tags   = { 'Name'  => "#{ENV['USER']}-dn4-7",
+      aws.tags   = { 'Name'  => "#{ENV['USER']}-7-dn4",
                      'owner' => "#{ENV['USER']}" }
     end
   end
