@@ -1,7 +1,7 @@
 ---
 local_repo: /opt/cloudera/repos
 
-cm5_pkg_dir: /opt/cloudera/repos/cm5/redhat/6/x86_64/cm/5/RPMS/x86_64
+cm5_pkg_dir: /opt/cloudera/repos/cm5/redhat/7/x86_64/cm/5/RPMS/x86_64
 
 cm5_pkgfiles:
 <? (for-each (cut format #t " - ~a\n" <>) (find cloudera-manager:pkgfiles)) !>
