@@ -8,7 +8,7 @@
   roles:
     - selinux
     - ipv6
-    - iptables
+#    - iptables
     - ntp
     - misc
     - java
