@@ -19,23 +19,24 @@
             "addr": "10.101.3.100",
             "instance_type": "m4.large"
         },
+        "nn": {
+            "instance_type": "m4.large"
+        },
         "nn1": {
             "host": "nn1-7.example.org",
-            "addr": "10.101.3.101",
-            "instance_type": "m4.large"
+            "addr": "10.101.3.101"
         },
         "nn2": {
             "host": "nn2-7.example.org",
-            "addr": "10.101.3.102",
-            "instance_type": "m4.xlarge"
+            "addr": "10.101.3.102"
         },
         "jn3": {
             "host": "jn3-7.example.org",
             "addr": "10.101.3.103",
-            "instance_type": "m4.xlarge"
+            "instance_type": "m4.large"
         },
         "dn": {
-            "instance_type": "m4.xlarge"
+            "instance_type": "m4.large"
         },
         "dn1": {
             "host": "dn1-7.example.org",

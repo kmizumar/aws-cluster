@@ -48,7 +48,7 @@ Vagrant.configure(2) do |config|
 
       aws.region = '<?= (find aws:region) !>'
       aws.ami    = '<?= (find aws:ami) !>'
-      aws.instance_type = '<?= (find aws:nn1:instance_type) !>'
+      aws.instance_type = '<?= (find aws:nn:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:nn1:addr) !>'
       aws.tags   = { 'Name'  => "#{ENV['USER']}-7-nn1",
@@ -72,7 +72,7 @@ Vagrant.configure(2) do |config|
 
       aws.region = '<?= (find aws:region) !>'
       aws.ami    = '<?= (find aws:ami) !>'
-      aws.instance_type = '<?= (find aws:nn2:instance_type) !>'
+      aws.instance_type = '<?= (find aws:nn:instance_type) !>'
 
       aws.private_ip_address = '<?= (find aws:nn2:addr) !>'
       aws.tags   = { 'Name'  => "#{ENV['USER']}-7-nn2",
