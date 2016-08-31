@@ -1,0 +1,20 @@
+127.0.0.1       localhost       localhost.localdomain
+
+<?
+(define-syntax find2
+  (syntax-rules ()
+    ([_ body]
+     (let1 key (eval body (interaction-environment))
+       (if (hash-table-exists? %%ht key)
+           (hash-table-get %%ht key)
+           key)
+       ))))
+(for-each
+ (^[host]
+   (format #t "~a\t~a\t~a\n"
+           (find2 (format #f "aws:~a:addr" host))
+           (find2 (format #f "aws:~a:host" host))
+           (regexp-replace #/\..*$/ (find2 (format #f "aws:~a:host" host)) "")
+           ))
+ (find aws:hosts))
+!>

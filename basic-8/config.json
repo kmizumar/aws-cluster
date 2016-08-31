@@ -7,7 +7,7 @@
         "region": "ap-northeast-1",
 
         "username": "centos",
-        "ami": "ami-28d81149",
+        "ami": "ami-86468ee7",
 
         "cm": {
             "host": "cm-7.example.org",
@@ -53,31 +53,15 @@
             "host": "dn4-7.example.org",
             "addr": "10.101.3.114"
         },
-        "dns": [{
-                "host": "cm",
-                "addr": "10.101.3.100"
-            },{
-                "host": "nn1",
-                "addr": "10.101.3.101"
-            },{
-                "host": "nn2",
-                "addr": "10.101.3.102"
-            },{
-                "host": "jn3",
-                "addr": "10.101.3.103"
-            },{
-                "host": "dn1",
-                "addr": "10.101.3.111"
-            },{
-                "host": "dn2",
-                "addr": "10.101.3.112"
-            },{
-                "host": "dn3",
-                "addr": "10.101.3.113"
-            },{
-                "host": "dn4",
-                "addr": "10.101.3.114"
-            }
+        "hosts": [
+            "cm",
+            "nn1",
+            "nn2",
+            "jn3",
+            "dn1",
+            "dn2",
+            "dn3",
+            "dn4"
         ]
     },
 

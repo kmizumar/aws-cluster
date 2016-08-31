@@ -6,10 +6,10 @@
     rdbms: mysql
 
   pre_tasks:
-    - name: set hostname
-      hostname: name={{ host }}
 
   roles:
+    - hostfile
+    - static-hostname
     - mysql-server
     - cloudera-manager
     - local-repository
@@ -22,10 +22,10 @@
   become_method: sudo
 
   pre_tasks:
-    - name: set hostname
-      hostname: name={{ host }}
 
   roles:
+    - hostfile
+    - static-hostname
 
   post_tasks:
 
@@ -35,9 +35,9 @@
   become_method: sudo
 
   pre_tasks:
-    - name: set hostname
-      hostname: name={{ host }}
 
   roles:
+    - hostfile
+    - static-hostname
 
   post_tasks:
