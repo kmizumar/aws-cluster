@@ -8,7 +8,7 @@
   pre_tasks:
 
   roles:
-    - hostfile
+    - hostsfile
     - static-hostname
     - mysql-server
     - cloudera-manager
@@ -24,7 +24,7 @@
   pre_tasks:
 
   roles:
-    - hostfile
+    - hostsfile
     - static-hostname
 
   post_tasks:
@@ -37,7 +37,7 @@
   pre_tasks:
 
   roles:
-    - hostfile
+    - hostsfile
     - static-hostname
 
   post_tasks:
